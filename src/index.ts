@@ -256,4 +256,48 @@ export namespace OpenGraph {
 		T extends MusicType ? Music<T> :
 		T extends VideoType ? Video<T> :
 		never
+
+	interface Meta {
+		property: string
+		content: string
+	}
+
+	const buildIfArray = (object: any[], parent?: string) => {
+		let data: Meta[] = []
+		for (const item of object) {
+			const result = build(item, parent)
+			data = data.concat(result)
+		}
+		return data
+	}
+
+	const buildIfObject = (object: { [key: string]: any }, parent?: string) => {
+		let data: Meta[] = []
+		for (const key of Object.keys(object)) {
+			const value = object[key]
+			const property = parent ? `${parent}:${key}` : key
+			const content = build(value, property)
+			data = data.concat(content)
+		}
+		return data
+	}
+
+	export const build = (object: any, parent?: string) => {
+		let data: Meta[] = []
+		let property = parent
+		if (Array.isArray(object)) {
+			const content = buildIfArray(object, property)
+			data = data.concat(content)
+		} else if (typeof object === "object") {
+			const content = buildIfObject(object, property)
+			data = data.concat(content)
+		} else if (typeof object === "string") {
+			const content = `${object}`
+			data.push({ property: property!, content })
+		} else if (typeof object === "number") {
+			const content = `${object}`
+			data.push({ property: property!, content })
+		}
+		return data
+	}
 }
