@@ -3,7 +3,7 @@ type DateTime = Date
 
 type Url = string
 
-namespace OpenGraph {
+export namespace OpenGraph {
 	// Object Types
 
 	type WebsiteType = "website"
