@@ -288,41 +288,45 @@ export namespace OpenGraph {
 		content: string
 	}
 
-	const buildIfArray = (object: any[], parent?: string) => {
+	const buildIfArray = (object: any[], iterator: (key: string, value: string) => any, parent?: string) => {
 		let data: Meta[] = []
 		for (const item of object) {
-			const result = build(item, parent)
+			const result = build(item, iterator, parent)
 			data = data.concat(result)
 		}
 		return data
 	}
 
-	const buildIfObject = (object: { [key: string]: any }, parent?: string) => {
+	const buildIfObject = (object: { [key: string]: any }, iterator: (key: string, value: string) => any, parent?: string) => {
 		let data: Meta[] = []
 		for (const key of Object.keys(object)) {
 			const value = object[key]
 			const property = parent ? `${parent}:${key}` : key
-			const content = build(value, property)
+			const content = build(value, iterator, property)
 			data = data.concat(content)
 		}
 		return data
 	}
 
-	export const build = (object: any, parent?: string) => {
+	export const build = (object: any, iterator: (key: string, value: string) => any, parent?: string) => {
 		let data: Meta[] = []
 		let property = parent
 		if (Array.isArray(object)) {
-			const content = buildIfArray(object, property)
+			const content = buildIfArray(object, iterator, property)
 			data = data.concat(content)
 		} else if (typeof object === "object") {
-			const content = buildIfObject(object, property)
+			const content = buildIfObject(object, iterator, property)
 			data = data.concat(content)
 		} else if (typeof object === "string") {
-			const content = `${object}`
-			data.push({ property: property!, content })
+			const key = property!
+			const value = `${object}`
+			const content = iterator(key, value)
+			data.push(content)
 		} else if (typeof object === "number") {
-			const content = `${object}`
-			data.push({ property: property!, content })
+			const key = property!
+			const value = `${object}`
+			const content = iterator(key, value)
+			data.push(content)
 		}
 		return data
 	}
