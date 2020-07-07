@@ -84,13 +84,16 @@ export namespace OpenGraph {
 	}
 
 	interface Amount {
+		// A decimal number with a '.' as the decimal separator. Values less than 0.01 are not supported.
 		amount: number
 	}
 
 	interface Currency {
+		// Currency is a string representing the ISO-4217-3 currency code.
 		currency: string
 	}
 
+	// https://developers.facebook.com/docs/payments/product/
 	interface Product<T extends ProductType> extends Basic {
 		type: T
 		product: {
@@ -98,7 +101,7 @@ export namespace OpenGraph {
 			// product:plural_title - Title of the product when a quantity more than 1 is purchased.
 			plural_title?: string
 
-			// book:isbn - string - The ISBN
+			// product:price - Amount | Currency
 			price: Array<Amount | Currency>
 		}
 	}
