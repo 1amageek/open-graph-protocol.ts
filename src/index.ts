@@ -10,6 +10,8 @@ export namespace OpenGraph {
 
 	type ArticleType = "article"
 
+	type ProductType = "product"
+
 	type BookType = "book"
 
 	type ProfileType = "profile"
@@ -18,7 +20,7 @@ export namespace OpenGraph {
 
 	type VideoType = "video" | "video.movie" | "video.episode"
 
-	type ObjectType = WebsiteType | ArticleType | BookType | ProfileType | VideoType
+	type ObjectType = WebsiteType | ArticleType | ProductType | BookType | ProfileType | VideoType
 
 	interface Alternate {
 		alternate: string
@@ -51,6 +53,100 @@ export namespace OpenGraph {
 		url: string
 		secure_url?: string
 		type?: string
+	}
+
+	interface Website<T extends WebsiteType> extends Basic {
+		type: T
+	}
+
+	interface Article<T extends ArticleType> extends Basic {
+		type: T
+		article: {
+
+			// article:published_time - datetime - When the article was first published.
+			published_time: DateTime
+
+			// article:modified_time - datetime - When the article was last changed.
+			modified_time: DateTime
+
+			// article:expiration_time - datetime - When the article is out of date after.
+			expiration_time: DateTime
+
+			// article:author - profile array - Writers of the article.
+			author: Url | Url[]
+
+			// article:section - string - A high - level section name.E.g.Technology
+			section: string
+
+			// article:tag - string array - Tag words associated with this article.
+			tag: string | string[]
+		}
+	}
+
+	interface Amount {
+		amount: number
+	}
+
+	interface Currency {
+		currency: string
+	}
+
+	interface Product<T extends ProductType> extends Basic {
+		type: T
+		product: {
+
+			// product:plural_title - Title of the product when a quantity more than 1 is purchased.
+			plural_title?: string
+
+			// book:isbn - string - The ISBN
+			price: Array<Amount | Currency>
+		}
+	}
+
+	interface Book<T extends BookType> extends Basic {
+		type: T
+		book: {
+
+			// book:author - profile array - Who wrote this book.
+			author: Url | Url[]
+
+			// book:isbn - string - The ISBN
+			isbn: string
+
+			// book:release_date - datetime - The date the book was released.
+			release_date: DateTime
+
+			// book:tag - string array - Tag words associated with this book.
+			tag: string | string[]
+		}
+	}
+
+	interface Profile<T extends ProfileType> extends Basic {
+		type: T
+		book: {
+
+			// profile:first_name - string - A name normally given to an individual by a parent or self-chosen.
+			first_name: string
+
+			// profile:last_name - string - A name inherited from a family or marriage and by which the individual is commonly known.
+			last_name: string
+
+			// profile:username - string - A short unique string to identify them.
+			username: string
+
+			// profile:gender - enum(male, female) - Their gender.
+			gender: "male" | "female"
+		}
+	}
+
+	interface Music<T extends MusicType> extends Basic {
+		type: T
+		music: Url | Music.Props<T>
+	}
+
+	interface Video<T extends VideoType> extends Basic {
+		type: T
+		video: Url | Video.Props<T>
 	}
 
 	namespace Music {
@@ -174,83 +270,10 @@ export namespace OpenGraph {
 			never
 	}
 
-	interface Website<T extends WebsiteType> extends Basic {
-		type: T
-	}
-
-	interface Article<T extends ArticleType> extends Basic {
-		type: T
-		article: {
-
-			// article:published_time - datetime - When the article was first published.
-			published_time: DateTime
-
-			// article:modified_time - datetime - When the article was last changed.
-			modified_time: DateTime
-
-			// article:expiration_time - datetime - When the article is out of date after.
-			expiration_time: DateTime
-
-			// article:author - profile array - Writers of the article.
-			author: Url | Url[]
-
-			// article:section - string - A high - level section name.E.g.Technology
-			section: string
-
-			// article:tag - string array - Tag words associated with this article.
-			tag: string | string[]
-		}
-	}
-
-	interface Book<T extends BookType> extends Basic {
-		type: T
-		book: {
-
-			// book:author - profile array - Who wrote this book.
-			author: Url | Url[]
-
-			// book:isbn - string - The ISBN
-			isbn: string
-
-			// book:release_date - datetime - The date the book was released.
-			release_date: DateTime
-
-			// book:tag - string array - Tag words associated with this book.
-			tag: string | string[]
-		}
-	}
-
-	interface Profile<T extends ProfileType> extends Basic {
-		type: T
-		book: {
-
-			// profile:first_name - string - A name normally given to an individual by a parent or self-chosen.
-			first_name: string
-
-			// profile:last_name - string - A name inherited from a family or marriage and by which the individual is commonly known.
-			last_name: string
-
-			// profile:username - string - A short unique string to identify them.
-			username: string
-
-			// profile:gender - enum(male, female) - Their gender.
-			gender: "male" | "female"
-		}
-	}
-
-	interface Music<T extends MusicType> extends Basic {
-		type: T
-		music: Url | Music.Props<T>
-	}
-
-	interface Video<T extends VideoType> extends Basic {
-		type: T
-		video: Url | Video.Props<T>
-	}
-
 	export type Metadata<T extends ObjectType> =
 		T extends WebsiteType ? Website<T> :
 		T extends ArticleType ? Article<T> :
+		T extends ProductType ? Product<T> :
 		T extends BookType ? Book<T> :
 		T extends ProfileType ? Profile<T> :
 		T extends MusicType ? Music<T> :
